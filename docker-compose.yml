@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   postgres:
-    image: postgres:16
+    image: postgres:latest
     environment:
       POSTGRES_USER: nextjs
       POSTGRES_PASSWORD: nextjs
