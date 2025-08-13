@@ -3,10 +3,15 @@ import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
 const sql = postgres(process.env.POSTGRES_URL!, {
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : 'allow',
-  idle_timeout: 20,
-  connect_timeout: 20,
-  max: 1
+  ssl: false, // Disable SSL for local development
+  idle_timeout: 30,
+  connect_timeout: 30,
+  max: 5,
+  host: process.env.POSTGRES_HOST,
+  port: 5432,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DATABASE
 });
 
 async function seedUsers() {
@@ -108,9 +113,22 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
-    // Test connection first
-    await sql`SELECT 1`;
-    console.log('Database connection successful');
+    // Test connection first with retry logic
+    let retries = 5;
+    while (retries > 0) {
+      try {
+        await sql`SELECT 1`;
+        console.log('Database connection successful');
+        break;
+      } catch (err) {
+        retries--;
+        console.log(`Connection failed, ${retries} retries left...`);
+        if (retries === 0) {
+          throw err;
+        }
+        await new Promise(res => setTimeout(res, 5000));
+      }
+    }
     const result = await sql.begin((sql) => [
       seedUsers(),
       seedCustomers(),
