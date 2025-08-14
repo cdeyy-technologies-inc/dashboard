@@ -1,9 +1,9 @@
 import { GET } from '@/app/query/route';
-import { sql } from '@vercel/postgres';
+import sql from 'postgres';
 import { NextResponse } from 'next/server';
 
 // Mock the postgres module
-jest.mock('@vercel/postgres', () => ({
+jest.mock('postgres', () => ({
   sql: jest.fn().mockImplementation(() => ({
     // Mock the SQL query method
     then: jest.fn().mockResolvedValue([
@@ -22,7 +22,7 @@ jest.mock('next/server', () => ({
   }
 }));
 
-describe('GET /api/query', () => {
+describe('GET /query', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

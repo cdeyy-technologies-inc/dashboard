@@ -9,7 +9,7 @@ const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
-    '^@vercel/postgres$': '<rootDir>/__mocks__/postgres.js'
+    '^postgres$': '<rootDir>/__mocks__/postgres.js'
   },
   testEnvironment: 'jest-environment-jsdom',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
