@@ -25,8 +25,10 @@ export async function GET() {
   //     'Uncomment this file and remove this line. You can delete this file when you are finished.',
   // });
   try {
-  	return NextResponse.json(await listInvoices());
+    const data = await listInvoices();
+    return NextResponse.json(data);
   } catch (error) {
-  	return NextResponse.json({ error }, { status: 500 });
+    console.error('Database error:', error);
+    return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
   }
 }

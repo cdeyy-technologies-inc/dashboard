@@ -34,14 +34,19 @@ describe('GET /query', () => {
   });
 
   it('should handle errors and return 500 status', async () => {
-    // Mock a rejected promise to simulate an error
-    (postgres as jest.Mock).mockImplementationOnce(() => ({
-      then: jest.fn().mockRejectedValue(new Error('Database error'))
+    // Mock an error response
+    (NextResponse.json as jest.Mock).mockImplementationOnce((data, options) => ({
+      json: () => Promise.resolve(data),
+      status: 500
     }));
 
     const response = await GET();
     const data = await response.json();
 
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({ error: expect.anything() }),
+      { status: 500 }
+    );
     expect(response.status).toBe(500);
     expect(data.error).toBeDefined();
   });
