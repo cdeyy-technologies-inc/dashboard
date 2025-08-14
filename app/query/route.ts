@@ -10,7 +10,7 @@ const sql = postgres(process.env.POSTGRES_URL!, {
   // username: process.env.POSTGRES_USER,
   // password: process.env.POSTGRES_PASSWORD,
   // database: process.env.POSTGRES_DATABASE
-  ssl: process.env.POSTGRES_SSL === 'false' ? false : process.env.POSTGRES_SSL
+  ssl: process.env.POSTGRES_SSL === 'false' ? false : 'require'
 });
 
 async function listInvoices() {
