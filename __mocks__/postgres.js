@@ -1,3 +1,5 @@
-export const sql = jest.fn(() => ({
+const postgres = jest.fn(() => ({
   then: jest.fn().mockResolvedValue([])
 }));
+
+module.exports = postgres;
