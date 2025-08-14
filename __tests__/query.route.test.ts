@@ -5,9 +5,11 @@ import { NextResponse } from 'next/server';
 
 // Mock the postgres module
 jest.mock('postgres', () => jest.fn(() => ({
-  sql: jest.fn().mockResolvedValue([
-    { amount: 666, name: 'Test Customer' }
-  ])
+  then: jest.fn().mockImplementation((callback) => {
+    return callback([
+      { amount: 666, name: 'Test Customer' }
+    ]);
+  })
 })));
 
 // Mock NextResponse
