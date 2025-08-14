@@ -4,8 +4,8 @@
     "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "test:db:up": "docker-compose up -d && docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/seed-test-data.sql",
-    "test:db:down": "docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/teardown/teardown-test-data.sql && docker-compose down -v"
+    "test:localdb:up": "docker-compose up -d && docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/seed-test-data.sql",
+    "test:localdb:down": "docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/teardown/teardown-test-data.sql && docker-compose down -v"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
