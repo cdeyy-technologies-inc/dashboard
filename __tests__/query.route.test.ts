@@ -1,16 +1,9 @@
 import { GET } from '@/app/query/route';
 import postgres from 'postgres';
 import { NextResponse } from 'next/server';
-import { NextResponse } from 'next/server';
 
 // Mock the postgres module
-jest.mock('postgres', () => jest.fn(() => ({
-  then: jest.fn().mockImplementation((callback) => {
-    return callback([
-      { amount: 666, name: 'Test Customer' }
-    ]);
-  })
-})));
+jest.mock('postgres');
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
