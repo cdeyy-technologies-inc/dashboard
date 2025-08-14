@@ -1,4 +1,5 @@
 import postgres from 'postgres';
+import { NextResponse } from 'next/server';
 
 //const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 const sql = postgres(process.env.POSTGRES_URL!, {
@@ -30,8 +31,8 @@ export async function GET() {
   //     'Uncomment this file and remove this line. You can delete this file when you are finished.',
   // });
   try {
-  	return Response.json(await listInvoices());
+  	return NextResponse.json(await listInvoices());
   } catch (error) {
-  	return Response.json({ error }, { status: 500 });
+  	return NextResponse.json({ error }, { status: 500 });
   }
 }

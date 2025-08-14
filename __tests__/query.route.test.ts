@@ -1,6 +1,7 @@
 import { GET } from '@/app/query/route';
 import postgres from 'postgres';
 import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Mock the postgres module
 jest.mock('postgres', () => jest.fn(() => ({
@@ -9,15 +10,9 @@ jest.mock('postgres', () => jest.fn(() => ({
   ])
 })));
 
-// Mock NextResponse and Response
+// Mock NextResponse
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn().mockImplementation((data, options) => ({
-      json: () => Promise.resolve(data),
-      status: options?.status || 200
-    }))
-  },
-  Response: {
     json: jest.fn().mockImplementation((data, options) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200
@@ -35,7 +30,7 @@ describe('GET /query', () => {
     const data = await response.json();
 
     expect(postgres).toHaveBeenCalled();
-    expect(Response.json).toHaveBeenCalled();
+    expect(NextResponse.json).toHaveBeenCalled();
     expect(data).toEqual([
       { amount: 666, name: 'Test Customer' }
     ]);
