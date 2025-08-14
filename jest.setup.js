@@ -1,7 +1,6 @@
 /** @jsxImportSource react */
 import React from 'react';
 import '@testing-library/jest-dom';
-import type { ReactNode, ComponentPropsWithoutRef } from 'react';
 
 // Mock window.matchMedia
 window.matchMedia = window.matchMedia || function() {
@@ -35,7 +34,7 @@ jest.mock('next/router', () => ({
 jest.mock('next/head', () => {
   return {
     __esModule: true,
-    default: ({ children }: { children: ReactNode }): ReactNode => {
+    default: ({ children }) => {
       return children;
     },
   };
@@ -44,7 +43,7 @@ jest.mock('next/head', () => {
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: ComponentPropsWithoutRef<'img'>): ReactNode => {
+  default: (props) => {
     // eslint-disable-next-line jsx-a11y/alt-text
     return React.createElement('img', props);
   },
