@@ -1,6 +1,17 @@
 import postgres from 'postgres';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+//const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, {
+  // idle_timeout: 30,
+  // connect_timeout: 30,
+  // max: 5,
+  // host: process.env.POSTGRES_HOST,
+  // port: 5432,
+  // username: process.env.POSTGRES_USER,
+  // password: process.env.POSTGRES_PASSWORD,
+  // database: process.env.POSTGRES_DATABASE
+  ssl: process.env.POSTGRES_SSL === 'false' ? false : process.env.POSTGRES_SSL
+});
 
 async function listInvoices() {
 	const data = await sql`

@@ -20,7 +20,8 @@ docker-compose up -d
 
 2. Copy the environment variables:
 ```bash
-cp .env.example .env
+cp .env .env.backup
+cp .env.local .env
 ```
 
 3. Generate an auth secret and add it to .env:
