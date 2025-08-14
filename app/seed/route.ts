@@ -2,7 +2,18 @@ import bcrypt from 'bcrypt';
 import postgres from 'postgres';
 import { invoices, customers, revenue, users } from '../lib/placeholder-data';
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+//const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, {
+  // idle_timeout: 30,
+  // connect_timeout: 30,
+  // max: 5,
+  // host: process.env.POSTGRES_HOST,
+  // port: 5432,
+  // username: process.env.POSTGRES_USER,
+  // password: process.env.POSTGRES_PASSWORD,
+  // database: process.env.POSTGRES_DATABASE,
+  ssl: process.env.POSTGRES_SSL === 'false' ? false : 'require'
+});
 
 async function seedUsers() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -103,6 +114,22 @@ async function seedRevenue() {
 
 export async function GET() {
   try {
+    // Test connection first with retry logic
+    let retries = 5;
+    while (retries > 0) {
+      try {
+        await sql`SELECT 1`;
+        console.log('Database connection successful');
+        break;
+      } catch (err) {
+        retries--;
+        console.log(`Connection failed, ${retries} retries left...`);
+        if (retries === 0) {
+          throw err;
+        }
+        await new Promise(res => setTimeout(res, 5000));
+      }
+    }
     const result = await sql.begin((sql) => [
       seedUsers(),
       seedCustomers(),

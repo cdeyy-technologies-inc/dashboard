@@ -2,8 +2,14 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbopack",
-    "start": "next start"
+    "dev.origin": "next dev --turbopack",
+    "dev": "dotenv -c local -- next dev --turbopack",
+    "dev:vercel": "dotenv -c vercel -- next dev",
+    "dev:firebase": "dotenv -c firebase -- next dev",
+    "dev:production": "dotenv -c production -- next dev",
+    "start": "next start",
+    "test:localdb:up": "docker-compose up -d && docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/seed-test-data.sql",
+    "test:localdb:down": "docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/teardown/teardown-test-data.sql && docker-compose down -v"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -26,7 +32,10 @@
     "@types/bcrypt": "^5.0.2",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
-    "@types/react-dom": "19.0.3"
+    "@types/react-dom": "19.0.3",
+    "dotenv-cli": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "wait-port": "^1.1.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
