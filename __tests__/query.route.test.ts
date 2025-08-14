@@ -9,9 +9,15 @@ jest.mock('postgres', () => jest.fn(() => ({
   ])
 })));
 
-// Mock NextResponse
+// Mock NextResponse and Response
 jest.mock('next/server', () => ({
   NextResponse: {
+    json: jest.fn().mockImplementation((data, options) => ({
+      json: () => Promise.resolve(data),
+      status: options?.status || 200
+    }))
+  },
+  Response: {
     json: jest.fn().mockImplementation((data, options) => ({
       json: () => Promise.resolve(data),
       status: options?.status || 200
@@ -29,7 +35,7 @@ describe('GET /query', () => {
     const data = await response.json();
 
     expect(postgres).toHaveBeenCalled();
-    expect(NextResponse.json).toHaveBeenCalled();
+    expect(Response.json).toHaveBeenCalled();
     expect(data).toEqual([
       { amount: 666, name: 'Test Customer' }
     ]);
