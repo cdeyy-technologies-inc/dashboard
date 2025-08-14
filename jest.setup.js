@@ -1,4 +1,4 @@
-// Extend Jest expect with React Testing Library matchers
+import React from 'react';
 import '@testing-library/jest-dom';
 
 // Mock window.matchMedia
@@ -33,7 +33,7 @@ jest.mock('next/router', () => ({
 jest.mock('next/head', () => {
   return {
     __esModule: true,
-    default: ({ children }: { children: React.ReactNode }) => {
+    default: ({ children }: { children: React.ReactNode }): React.ReactElement => {
       return <>{children}</>;
     },
   };
@@ -42,7 +42,7 @@ jest.mock('next/head', () => {
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: React.ComponentPropsWithoutRef<'img'>) => {
+  default: (props: React.ComponentPropsWithoutRef<'img'>): React.ReactElement => {
     return <img {...props} />;
   },
 }));
