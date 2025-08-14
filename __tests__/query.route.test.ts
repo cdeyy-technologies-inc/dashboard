@@ -3,14 +3,16 @@ import postgres from 'postgres';
 import { NextResponse } from 'next/server';
 
 // Mock the postgres module
-jest.mock('postgres');
+jest.mock('postgres', () => jest.fn(() => {
+  return jest.fn().mockResolvedValue([{ amount: 666, name: 'Test Customer' }]);
+}));
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
   NextResponse: {
-    json: jest.fn().mockImplementation((data, options) => ({
+    json: jest.fn((data) => ({
       json: () => Promise.resolve(data),
-      status: options?.status || 200
+      status: 200
     }))
   }
 }));
