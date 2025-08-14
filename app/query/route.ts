@@ -7,6 +7,8 @@ async function listInvoices() {
     ssl: process.env.POSTGRES_SSL === 'false' ? false : 'require'
   });
   
+  console.log('sql is:', sql);
+
   const data = await sql`
     SELECT invoices.amount, customers.name
     FROM invoices
