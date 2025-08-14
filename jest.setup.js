@@ -33,7 +33,7 @@ jest.mock('next/router', () => ({
 jest.mock('next/head', () => {
   return {
     __esModule: true,
-    default: ({ children }: { children: Array<React.ReactElement> }) => {
+    default: ({ children }: { children: React.ReactNode }) => {
       return <>{children}</>;
     },
   };
@@ -42,7 +42,7 @@ jest.mock('next/head', () => {
 // Mock Next.js Image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: any) => {
+  default: (props: React.ComponentPropsWithoutRef<'img'>) => {
     return <img {...props} />;
   },
 }));
