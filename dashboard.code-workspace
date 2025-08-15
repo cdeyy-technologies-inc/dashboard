@@ -5,9 +5,6 @@
 		},
 		{
 			"path": "."
-		},
-		{
-			"path": "../ai-for-students/open-source/cloud"
 		}
 	],
 	"settings": {}

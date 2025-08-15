@@ -1,8 +1,6 @@
 const postgres = jest.fn(() => {
   // Mock the sql function that gets called with template strings
-  const sql = jest.fn().mockImplementation(() => {
-    return Promise.resolve([{ amount: 666, name: 'Test Customer' }]);
-  });
+  const sql = jest.fn();
   return sql;
 });
 

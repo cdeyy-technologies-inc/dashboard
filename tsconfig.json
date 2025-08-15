@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.ts",
     "scripts/seed.js"
-  ],
+, "__tests__/query.route.test copy.ts.bak"  ],
   "exclude": ["node_modules"]
 }

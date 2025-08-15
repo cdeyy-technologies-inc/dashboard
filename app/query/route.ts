@@ -7,7 +7,7 @@ async function listInvoices() {
     ssl: process.env.POSTGRES_SSL === 'false' ? false : 'require'
   });
   
-  console.log('sql is:', sql);
+  //console.log('sql is:', sql);
 
   const data = await sql`
     SELECT invoices.amount, customers.name
@@ -29,6 +29,6 @@ export async function GET() {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Database error:', error);
-    return NextResponse.json({ error: 'Database query failed' }, { status: 500 });
+    return NextResponse.json({ error: 'Database query failed', status: 500 });
   }
 }
