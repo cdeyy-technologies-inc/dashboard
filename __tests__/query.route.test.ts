@@ -6,7 +6,6 @@ import { NextResponse } from 'next/server';
 // jest.mock('postgres', () => jest.fn(() => {
 //   return jest.fn().mockResolvedValue([{ amount: 666, name: 'Test Customer' }]);
 // }));
-
 jest.mock('postgres');  // this tells Jest to use __mocks__/postgres.js
 
 // Mock NextResponse
