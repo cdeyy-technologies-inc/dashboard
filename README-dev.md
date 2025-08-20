@@ -576,5 +576,152 @@ However, there is one disadvantage of relying only on this JavaScript pattern: w
 
 ### Static and Dynamic Rendering
 
-todo: https://nextjs.org/learn/dashboard-app/static-and-dynamic-rendering
+In the previous chapter, you fetched data for the Dashboard Overview page. However, we briefly discussed two limitations of the current setup:
+
+    The data requests are creating an unintentional waterfall.
+    The dashboard is static, so any data updates will not be reflected on your application.
+
+
+
+Here are the topics we’ll cover
+
+  What static rendering is and how it can improve your application's performance.
+
+  What dynamic rendering is and when to use it.
+
+  Different approaches to make your dashboard dynamic.
+
+  Simulate a slow data fetch to see what happens.
+
+
+#### What is Static Rendering?
+
+With static rendering, data fetching and rendering happens on the server at build time (when you deploy) or when revalidating data.
+
+Whenever a user visits your application, the cached result is served. There are a couple of benefits of static rendering:
+
+    Faster Websites - Prerendered content can be cached and globally distributed when deployed to platforms like Vercel
+
+. This ensures that users around the world can access your website's content more quickly and reliably.
+Reduced Server Load - Because the content is cached, your server does not have to dynamically generate content for each user request. This can reduce compute costs.
+SEO - Prerendered content is easier for search engine crawlers to index, as the content is already available when the page loads. This can lead to improved search engine rankings.
+
+
+Static rendering is useful for UI with no data or data that is shared across users, such as a static blog post or a product page. It might not be a good fit for a dashboard that has personalized data which is regularly updated.
+
+The opposite of static rendering is dynamic rendering.
+
+
+#### What is Dynamic Rendering?
+
+With dynamic rendering, content is rendered on the server for each user at request time (when the user visits the page). There are a couple of benefits of dynamic rendering:
+
+    Real-Time Data - Dynamic rendering allows your application to display real-time or frequently updated data. This is ideal for applications where data changes often.
+    User-Specific Content - It's easier to serve personalized content, such as dashboards or user profiles, and update the data based on user interaction.
+    Request Time Information - Dynamic rendering allows you to access information that can only be known at request time, such as cookies or the URL search parameters.
+
+
+#### Simulating a Slow Data Fetch
+
+The dashboard application we're building is dynamic.
+
+However, there is still one problem mentioned in the previous chapter. What happens if one data request is slower than all the others?
+
+Let's simulate a slow data fetch. In app/lib/data.ts, uncomment the console.log and setTimeout inside fetchRevenue():
+
+Here, you've added an artificial 3-second delay to simulate a slow data fetch. The result is that now your whole page is blocked from showing UI to the visitor while the data is being fetched. Which brings us to a common challenge developers have to solve:
+
+With dynamic rendering, your application is only as fast as your slowest data fetch.
+
+### 9. Streaming
+Here are the topics we’ll cover
+
+  What streaming is and when you might use it.
+
+  How to implement streaming with loading.tsx and Suspense.
+
+  What loading skeletons are.
+
+  What Next.js Route Groups are, and when you might use them.
+
+  Where to place React Suspense boundaries in your application.
+
+
+#### What is streaming?
+
+Streaming is a data transfer technique that allows you to break down a route into smaller "chunks" and progressively stream them from the server to the client as they become ready.
+
+By streaming, you can prevent slow data requests from blocking your whole page. This allows the user to see and interact with parts of the page without waiting for all the data to load before any UI can be shown to the user.
+
+Streaming works well with React's component model, as each component can be considered a chunk.
+
+There are two ways you implement streaming in Next.js:
+
+    At the page level, with the loading.tsx file (which creates <Suspense> for you).
+    At the component level, with <Suspense> for more granular control.
+
+
+#### Streaming UI with Suspense
+
+To improve the user experience when some data requests are slow, you can use React's [Suspense](https://react.dev/reference/react/Suspense) feature. Suspense lets you "stream" parts of your UI to the browser as soon as they're ready, instead of waiting for all data to load before showing anything.
+
+With Suspense, you can wrap slow-loading components in a `<Suspense>` boundary and provide a fallback UI (like a loading spinner or skeleton). This way, the rest of your page can render immediately, and only the slow part will show a loading state until its data is ready.
+
+**Example:**
+
+Suppose you have a dashboard with a revenue chart that loads slowly. You can wrap it like this:
+...
+
+#### Streaming a whole page with 'loading.tsx'
+
+In the /app/dashboard folder, create a new file called loading.tsx:
+
+    export default function Loading() {
+      return <div>Loading...</div>;
+    }
+
+A few things are happening here:
+
+    loading.tsx is a special Next.js file built on top of React Suspense. It allows you to create fallback UI to show as a replacement while page content loads.
+    Since <SideNav> is static, it's shown immediately. The user can interact with <SideNav> while the dynamic content is loading.
+    The user doesn't have to wait for the page to finish loading before navigating away (this is called interruptable navigation).
+
+Congratulations! You've just implemented streaming. But we can do more to improve the user experience. Let's show a loading skeleton instead of the Loading… text.
+
+
+##### Adding loading skeletons
+
+A loading skeleton is a simplified version of the UI. Many websites use them as a placeholder (or fallback) to indicate to users that the content is loading. Any UI you add in loading.tsx will be embedded as part of the static file, and sent first. Then, the rest of the dynamic content will be streamed from the server to the client.
+
+Inside your loading.tsx file, import a new component called <DashboardSkeleton>:
+
+##### Fixing the loading skeleton bug with route groups
+
+Right now, your loading skeleton will apply to the invoices.
+
+But since loading.tsx is a level higher than /invoices/page.tsx and /customers/page.tsx in the file system, it's also applied to those pages.
+
+We can change this with Route Groups
+. Create a new folder called /(overview) inside the dashboard folder. Then, move your loading.tsx and page.tsx files inside the folder:
+
+Now, the loading.tsx file will only apply to your dashboard overview page.
+
+Route groups allow you to organize files into logical groups without affecting the URL path structure. When you create a new folder using parentheses (), the name won't be included in the URL path. So /dashboard/(overview)/page.tsx becomes /dashboard.
+
+Here, you're using a route group to ensure loading.tsx only applies to your dashboard overview page. However, you can also use route groups to separate your application into sections (e.g. (marketing) routes and (shop) routes) or by teams for larger applications.
+
+#### Streaming a component
+
+So far, you're streaming a whole page. But you can also be more granular and stream specific components using React Suspense.
+
+Suspense allows you to defer rendering parts of your application until some condition is met (e.g. data is loaded). You can wrap your dynamic components in Suspense. Then, pass it a fallback component to show while the dynamic component loads.
+
+If you remember the slow data request, fetchRevenue(), this is the request that is slowing down the whole page. Instead of blocking your whole page, you can use Suspense to stream only this component and immediately show the rest of the page's UI.
+
+To do so, you'll need to move the data fetch to the component, let's update the code to see what that'll look like:
+
+Delete all instances of fetchRevenue() and its data from /dashboard/(overview)/page.tsx:
+
+#### practice: Streaming <LatestInvoices>
+
 
