@@ -725,3 +725,52 @@ Delete all instances of fetchRevenue() and its data from /dashboard/(overview)/p
 #### practice: Streaming <LatestInvoices>
 
 
+#### Grouping components
+
+Great! You're almost there, now you need to wrap the <Card> components in Suspense. You can fetch data for each individual card, but this could lead to a popping effect as the cards load in, this can be visually jarring for the user.
+
+So, how would you tackle this problem?
+
+To create more of a staggered effect, you can group the cards using a wrapper component. This means the static <SideNav/> will be shown first, followed by the cards, etc.
+
+In your page.tsx file:
+
+    Delete your <Card> components.
+    Delete the fetchCardData() function.
+    Import a new wrapper component called <CardWrapper />.
+    Import a new skeleton component called <CardsSkeleton />.
+    Wrap <CardWrapper /> in Suspense.
+
+
+#### Deciding where to place your Suspense boundaries
+
+Where you place your Suspense boundaries will depend on a few things:
+
+    How you want the user to experience the page as it streams.
+    What content you want to prioritize.
+    If the components rely on data fetching.
+
+Take a look at your dashboard page, is there anything you would've done differently?
+
+Don't worry. There isn't a right answer.
+
+    You could stream the whole page like we did with loading.tsx... but that may lead to a longer loading time if one of the components has a slow data fetch.
+    You could stream every component individually... but that may lead to UI popping into the screen as it becomes ready.
+    You could also create a staggered effect by streaming page sections. But you'll need to create wrapper components.
+
+Where you place your suspense boundaries will vary depending on your application. In general, it's good practice to move your data fetches down to the components that need it, and then wrap those components in Suspense. But there is nothing wrong with streaming the sections or the whole page if that's what your application needs.
+
+Don't be afraid to experiment with Suspense and see what works best, it's a powerful API that can help you create more delightful user experiences.
+
+
+#### Looking ahead
+
+Streaming and Server Components give us new ways to handle data fetching and loading states, ultimately with the goal of improving the end user experience.
+
+In the next chapter, you'll learn about Partial Prerendering, a new Next.js rendering model built with streaming in mind.
+
+
+### Partial Prerendering
+
+https://nextjs.org/learn/dashboard-app/partial-prerendering
+
