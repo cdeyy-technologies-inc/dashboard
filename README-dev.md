@@ -774,3 +774,343 @@ In the next chapter, you'll learn about Partial Prerendering, a new Next.js rend
 
 https://nextjs.org/learn/dashboard-app/partial-prerendering
 
+So far, you've learned about static and dynamic rendering, and how to stream dynamic content that depends on data. In this chapter, let's learn how to combine static rendering, dynamic rendering, and streaming in the same route with Partial Prerendering (PPR).
+
+Partial Prerendering is an experimental feature introduced in Next.js 14. The content of this page may be updated as the feature progresses in stability. PPR is only available with the Next.js canary releases (next@canary), not in the stable version of Next.js. We do not yet recommend using Partial Prerendering in production.
+
+To install the canary release of Next.js, run:
+
+  pnpm install next@canary
+
+
+todo:
+  waiting for stable version/release
+
+
+### Adding Search and Pagination
+
+
+Now work on route /dashboard/invoices to add search and pagination.
+
+This covers:
+  Learn how to use the Next.js APIs: useSearchParams, usePathname, and useRouter
+  Implement search and pagination using URL search params.
+
+#### Why use URL search params?
+
+As mentioned above, you'll be using URL search params to manage the search state. This pattern may be new if you're used to doing it with client side state.
+
+There are a couple of benefits of implementing search with URL params:
+
+    Bookmarkable and shareable URLs: Since the search parameters are in the URL, users can bookmark the current state of the application, including their search queries and filters, for future reference or sharing.
+    Server-side rendering: URL parameters can be directly consumed on the server to render the initial state, making it easier to handle server rendering.
+    Analytics and tracking: Having search queries and filters directly in the URL makes it easier to track user behavior without requiring additional client-side logic.
+
+Adding the search functionality
+
+These are the Next.js client hooks that you'll use to implement the search functionality:
+
+    useSearchParams- Allows you to access the parameters of the current URL. For example, the search params for this URL /dashboard/invoices?page=1&query=pending would look like this: {page: '1', query: 'pending'}.
+    usePathname - Lets you read the current URL's pathname. For example, for the route /dashboard/invoices, usePathname would return '/dashboard/invoices'.
+    useRouter - Enables navigation between routes within client components programmatically. There are multiple methods you can use.
+
+Here's a quick overview of the implementation steps:
+
+    Capture the user's input.
+    Update the URL with the search params.
+    Keep the URL in sync with the input field.
+    Update the table to reflect the search query.
+
+
+1. Capture the user's input
+
+Go into the <Search> Component (/app/ui/search.tsx), and you'll notice:
+
+    "use client" - This is a Client Component, which means you can use event listeners and hooks.
+    <input> - This is the search input.
+
+Create a new handleSearch function, and add an onChange listener to the <input> element. onChange will invoke handleSearch whenever the input value changes.
+
+
+    Add function handleSearch in Search function;
+    and add event for user input <input>
+
+2. Update the URL with the search params
+
+in search.tsx:
+Import the useSearchParams hook from next/navigation and assign it to a variable:
+
+URLSearchParams is a Web API that provides utility methods for manipulating the URL query parameters. Instead of creating a complex string literal, you can use it to get the params string like ?page=1&query=a.
+
+Next, set the params string based on the user’s input. If the input is empty, you want to delete it:
+
+Now that you have the query string. You can use Next.js's useRouter and usePathname hooks to update the URL.
+
+Import useRouter and usePathname from 'next/navigation', and use the replace method from useRouter() inside handleSearch:
+
+Here's a breakdown of what's happening:
+
+    ${pathname} is the current path, in your case, "/dashboard/invoices".
+    As the user types into the search bar, params.toString() translates this input into a URL-friendly format.
+    replace(${pathname}?${params.toString()}) updates the URL with the user's search data. For example, /dashboard/invoices?query=lee if the user searches for "Lee".
+    The URL is updated without reloading the page, thanks to Next.js's client-side navigation (which you learned about in the chapter on navigating between pages.
+
+3. Keeping the URL and input in sync
+
+To ensure the input field is in sync with the URL and will be populated when sharing, you can pass a defaultValue to input by reading from searchParams:
+
+/app/ui/search.tsx:
+  defaultValue={searchParams.get('query')?.toString()}
+
+
+
+    defaultValue vs. value / Controlled vs. Uncontrolled
+
+    If you're using state to manage the value of an input, you'd use the value attribute to make it a controlled component. This means React would manage the input's state.
+
+    However, since you're not using state, you can use defaultValue. This means the native input will manage its own state. This is okay since you're saving the search query to the URL instead of state.
+
+
+
+4. Updating the table
+
+Finally, you need to update the table component to reflect the search query.
+
+Navigate back to the invoices page.
+
+Page components accept a prop called searchParams, so you can pass the current URL params to the <Table> component.
+
+With these changes in place, go ahead and test it out. If you search for a term, you'll update the URL, which will send a new request to the server, data will be fetched on the server, and only the invoices that match your query will be returned.
+
+    When to use the useSearchParams() hook vs. the searchParams prop?
+
+    You might have noticed you used two different ways to extract search params. Whether you use one or the other depends on whether you're working on the client or the server.
+
+        <Search> is a Client Component, so you used the useSearchParams() hook to access the params from the client.
+        <Table> is a Server Component that fetches its own data, so you can pass the searchParams prop from the page to the component.
+
+    As a general rule, if you want to read the params from the client, use the useSearchParams() hook as this avoids having to go back to the server.
+
+#### Best practice: Debouncing
+
+Congratulations! You've implemented search with Next.js! But there's something you can do to optimize it.
+
+Inside your handleSearch function, add the following console.log:
+
+You will notice that: 
+You're updating the URL on every keystroke, and therefore querying your database on every keystroke! This isn't a problem as our application is small, but imagine if your application had thousands of users, each sending a new request to your database on each keystroke.
+
+Debouncing is a programming practice that limits the rate at which a function can fire. In our case, you only want to query the database when the user has stopped typing.
+
+
+
+    How Debouncing Works:
+
+        Trigger Event: When an event that should be debounced (like a keystroke in the search box) occurs, a timer starts.
+        Wait: If a new event occurs before the timer expires, the timer is reset.
+        Execution: If the timer reaches the end of its countdown, the debounced function is executed.
+
+
+You can implement debouncing in a few ways, including manually creating your own debounce function. To keep things simple, we'll use a library called use-debounce
+.
+
+Install use-debounce:
+
+  pnpm i use-debounce
+
+In your <Search> Component, import a function called useDebouncedCallback:
+
+#### Adding pagination
+
+After introducing the search feature, you'll notice the table displays only 6 invoices at a time. This is because the fetchFilteredInvoices() function in data.ts returns a maximum of 6 invoices per page.
+
+Adding pagination allows users to navigate through the different pages to view all the invoices. Let's see how you can implement pagination using URL params, just like you did with search.
+
+Navigate to the <Pagination/> component and you'll notice that it's a Client Component. You don't want to fetch data on the client as this would expose your database secrets (remember, you're not using an API layer). Instead, you can fetch the data on the server, and pass it to the component as a prop.
+
+
+Here's a breakdown of what's happening:
+
+    createPageURL creates an instance of the current search parameters.
+    Then, it updates the "page" parameter to the provided page number.
+    Finally, it constructs the full URL using the pathname and updated search parameters.
+
+
+
+### Mutating Data
+
+Let's continue working on the Invoices page by adding the ability to create, update, and delete invoices!
+
+we’ll cover
+
+What React Server Actions are and how to use them to mutate data.
+
+How to work with forms and Server Components.
+
+Best practices for working with the native FormData object, including type validation.
+
+How to revalidate the client cache using the revalidatePath API.
+
+How to create dynamic route segments with specific IDs.
+
+#### What are Server Actions?
+
+React Server Actions allow you to run asynchronous code directly on the server. They eliminate the need to create API endpoints to mutate your data. Instead, you write asynchronous functions that execute on the server and can be invoked from your Client or Server Components.
+
+Security is a top priority for web applications, as they can be vulnerable to various threats. This is where Server Actions come in. They include features like encrypted closures, strict input checks, error message hashing, host restrictions, and more — all working together to significantly enhance your application security.
+
+#### Using forms with Server Actions
+
+In React, you can use the action attribute in the <form> element to invoke actions. The action will automatically receive the native FormData
+
+object, containing the captured data.
+
+For example:
+
+```tsx
+// Server Component
+export default function Page() {
+  // Action
+  async function create(formData: FormData) {
+    'use server';
+ 
+    // Logic to mutate data...
+  }
+ 
+  // Invoke the action using the "action" attribute
+  return <form action={create}>...</form>;
+}
+```
+
+An advantage of invoking a Server Action within a Server Component is progressive enhancement - forms work even if JavaScript has not yet loaded on the client. For example, without slower internet connections.
+
+#### Next.js with Server Actions
+
+Server Actions are also deeply integrated with Next.js caching
+. When a form is submitted through a Server Action, not only can you use the action to mutate data, but you can also revalidate the associated cache using APIs like revalidatePath and revalidateTag.
+
+#### Creating an invoice
+
+Here are the steps you'll take to create a new invoice:
+
+    Create a form to capture the user's input.
+    Create a Server Action and invoke it from the form.
+    Inside your Server Action, extract the data from the formData object.
+    Validate and prepare the data to be inserted into your database.
+    Insert the data and handle any errors.
+    Revalidate the cache and redirect the user back to invoices page.
+
+
+1. Create a new route and form
+
+To start, inside the /invoices folder, add a new route segment called /create with a page.tsx file:
+
+Your page is a Server Component that fetches customers and passes it to the <Form> component. To save time, we've already created the <Form> component for you.
+
+Navigate to the <Form> component, and you'll see that the form:
+
+    Has one <select> (dropdown) element with a list of customers.
+    Has one <input> element for the amount with type="number".
+    Has two <input> elements for the status with type="radio".
+    Has one button with type="submit".
+
+On http://localhost:3000/dashboard/invoices/create
+, you should see the following UI:
+
+
+2. Create a Server Action
+
+Great, now let's create a Server Action that is going to be called when the form is submitted.
+
+Navigate to your lib/ directory and create a new file named actions.ts. At the top of this file, add the React use server
+directive:
+
+By adding the 'use server', you mark all the exported functions within the file as Server Actions. These server functions can then be imported and used in Client and Server components. Any functions included in this file that are not used will be automatically removed from the final application bundle.
+
+You can also write Server Actions directly inside Server Components by adding "use server" inside the action. 
+
+But for this course, we'll keep them all organized in a separate file. We recommend having a separate file for your actions.
+
+In your actions.ts file, create a new async function that accepts formData:
+
+  'use server';
+ 
+  export async function createInvoice(formData: FormData) {}
+
+Then, in your <Form> component, import the createInvoice from your actions.ts file. Add a action attribute to the <form> element, and call the createInvoice action.
+
+
+
+    Good to know: In HTML, you'd pass a URL to the action attribute. This URL would be the destination where your form data should be submitted (usually an API endpoint).
+
+    However, in React, the action attribute is considered a special prop - meaning React builds on top of it to allow actions to be invoked.
+
+    Behind the scenes, Server Actions create a POST API endpoint. This is why you don't need to create API endpoints manually when using Server Actions.
+
+3. Extract the data from formData
+
+Back in your actions.ts file, you'll need to extract the values of formData, there are a couple of methods
+you can use. For this example, let's use the .get(name)
+method.
+
+Tip: If you're working with forms that have many fields, you may want to consider using the entries()
+method with JavaScript's Object.fromEntries()
+.
+
+4. Validate and prepare the data
+
+Before sending the form data to your database, you want to ensure it's in the correct format and with the correct types. If you remember from earlier in the course, your invoices table expects data in the following format:
+
+
+
+Type validation and coercion
+
+It's important to validate that the data from your form aligns with the expected types in your database. For instance, if you add a console.log inside your action:
+
+console.log(typeof rawFormData.amount);
+
+
+You'll notice that amount is of type string and not number. This is because input elements with type="number" actually return a string, not a number!
+
+To handle type validation, you have a few options. While you can manually validate types, using a type validation library can save you time and effort. For your example, we'll use Zod
+, a TypeScript-first validation library that can simplify this task for you.
+
+
+In your actions.ts file, import Zod and define a schema that matches the shape of your form object. This schema will validate the formData before saving it to a database.
+
+
+Storing values in cents
+
+It's usually good practice to store monetary values in cents in your database to eliminate JavaScript floating-point errors and ensure greater accuracy.
+
+Let's convert the amount into cents:
+
+
+Creating new dates
+
+Finally, let's create a new date with the format "YYYY-MM-DD" for the invoice's creation date:
+
+
+  const date = new Date().toISOString().split('T')[0];
+
+5. Inserting the data into your database
+
+Now that you have all the values you need for your database, you can create an SQL query to insert the new invoice into your database and pass in the variables:
+
+6. Revalidate and redirect
+
+Next.js has a client-side router cache that stores the route segments in the user's browser for a time. Along with prefetching, this cache ensures that users can quickly navigate between routes while reducing the number of requests made to the server.
+
+Since you're updating the data displayed in the invoices route, you want to clear this cache and trigger a new request to the server. You can do this with the revalidatePath function from Next.js:
+
+
+Once the database has been updated, the /dashboard/invoices path will be revalidated, and fresh data will be fetched from the server.
+
+At this point, you also want to redirect the user back to the /dashboard/invoices page. You can do this with the redirect function from Next.js:
+
+#### Updating an invoice
+
+todo 
+
+https://nextjs.org/learn/dashboard-app/mutating-data
+
