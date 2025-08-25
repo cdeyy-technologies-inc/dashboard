@@ -1110,7 +1110,63 @@ At this point, you also want to redirect the user back to the /dashboard/invoice
 
 #### Updating an invoice
 
-todo 
+The updating invoice form is similar to the create an invoice form, except you'll need to pass the invoice id to update the record in your database.
 
-https://nextjs.org/learn/dashboard-app/mutating-data
+
+These are the steps you'll take to update an invoice:
+
+    Create a new dynamic route segment with the invoice id.
+    Read the invoice id from the page params.
+    Fetch the specific invoice from your database.
+    Pre-populate the form with the invoice data.
+    Update the invoice data in your database.
+
+
+1. Create a Dynamic Route Segment with the invoice id
+
+Next.js allows you to create Dynamic Route Segments when you don't know the exact segment name and want to create routes based on data. This could be blog post titles, product pages, etc. You can create dynamic route segments by wrapping a folder's name in square brackets. For example, [id], [post] or [slug].
+
+In your /invoices folder, create a new dynamic route called [id], then a new route called edit with a page.tsx file. Your file structure should look like this:
+
+  invoices/[id]/edit/page.tsx
+
+
+In your <Table> component, notice there's a <UpdateInvoice /> button that receives the invoice's id from the table records.
+
+Navigate to your <UpdateInvoice /> component, and update the href of the Link to accept the id prop. You can use template literals to link to a dynamic route segment:
+
+  href={`/dashboard/invoices/${id}/edit`}
+
+2. Read the invoice id from page params
+
+Back on your <Page> component, paste the following code:
+  /app/dashboard/invocies/[id]/edit/page.tsx
+
+Notice how it's similar to your /create invoice page, except it imports a different form (from the edit-form.tsx file). This form should be pre-populated with a defaultValue for the customer's name, invoice amount, and status. To pre-populate the form fields, you need to fetch the specific invoice using id.
+
+
+In addition to searchParams, page components also accept a prop called params which you can use to access the id. Update your <Page> component to receive the prop:
+
+3. Fetch the specific invoice
+
+Then:
+
+    Import a new function called fetchInvoiceById and pass the id as an argument.
+    Import fetchCustomers to fetch the customer names for the dropdown.
+
+You can use Promise.all to fetch both the invoice and customers in parallel:
+
+4. Pass the id to the Server Action
+
+Lastly, you want to pass the id to the Server Action so you can update the right record in your database. You cannot pass the id as an argument like so:
+
+Instead, you can pass id to the Server Action using JS bind. This will ensure that any values passed to the Server Action are encoded.
+
+note: console.log message in server component can be found at server output logs, not in browser inspector console.
+
+#### Deleting an invoice
+
+To delete an invoice using a Server Action, wrap the delete button in a <form> element and pass the id to the Server Action using bind:
+
+Since this action is being called in the /dashboard/invoices path, you don't need to call redirect. Calling revalidatePath will trigger a new server request and re-render the table.
 
