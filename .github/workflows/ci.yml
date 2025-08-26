@@ -34,9 +34,15 @@ jobs:
         run: npm install -g pnpm && pnpm install
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+      - name: Test Setup - start local postgresl db in docker
+        run: pnpm run test:localdb:up & npx wait-port localhost:5432 -t 5000
+      - name: Start dev server and wait for http://localhost:3000
+        run: pnpm run dev & npx wait-port localhost:3000 -t 10000
       - name: Run Playwright E2E tests
         # uses npx so no package.json changes are required
         run: npx playwright test --reporter=html
+      - name: Test Teardown - stop local postgresl db in docker
+        run: pnpm run test:localdb:down
       - name: Upload Playwright HTML report on failure
         if: failure()
         uses: actions/upload-artifact@v4
