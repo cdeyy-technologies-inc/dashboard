@@ -1170,3 +1170,7 @@ To delete an invoice using a Server Action, wrap the delete button in a <form> e
 
 Since this action is being called in the /dashboard/invoices path, you don't need to call redirect. Calling revalidatePath will trigger a new server request and re-render the table.
 
+### Handling Errors
+
+Let's see how you can handle errors gracefully using JavaScript's try/catch statements and Next.js APIs for uncaught exceptions.
+
