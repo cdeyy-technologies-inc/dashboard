@@ -31,6 +31,6 @@
     ".next/types/**/*.ts",
     "app/lib/placeholder-data.ts",
     "scripts/seed.js"
-, "__tests__/query.route.test copy.ts.bak"  ],
+, "__tests__/query.route.test copy.ts.bak", "../practice/FE/jest-demo/jest-ts/__tests__/spy.spec.ts", "../practice/FE/jest-demo/jest-ts/__tests__/async.spec.ts"  ],
   "exclude": ["node_modules"]
 }
