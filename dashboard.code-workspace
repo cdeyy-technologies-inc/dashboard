@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../practice/FE/jest-demo/jest-ts"
 		}
 	],
 	"settings": {}
