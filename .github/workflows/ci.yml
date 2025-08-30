@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main, master]
 
+env:
+  NODE_ENV: development
+  POSTGRES_URL: postgres://nextjs:nextjs@localhost:5432/nextjs
+  POSTGRES_USER: nextjs
+  POSTGRES_HOST: localhost
+  POSTGRES_SSL: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
