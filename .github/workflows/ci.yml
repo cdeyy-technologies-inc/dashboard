@@ -24,6 +24,8 @@ jobs:
   e2e:
     needs: build
     runs-on: ubuntu-latest
+    env: 
+      NODE_ENV: ci
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
