@@ -25,7 +25,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env: 
-      NODE_ENV: development 
+      NODE_ENV: development
+      POSTGRES_SSL: false
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
