@@ -38,10 +38,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
-      - name: Test Setup - start local postgresl db in docker
-        run: pnpm run test:localdb:up & npx wait-port localhost:5432 -t 5000
+      - name: Start local PostgreSQL db in docker
+        run: docker-compose up -d
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          timeout=30
+          until docker exec nextjs_test_db pg_isready -U nextjs -d nextjs || [ $timeout -eq 0 ]; do
+            sleep 1
+            ((timeout--))
+            echo "Waiting... $timeout seconds remaining"
+          done
+          if [ $timeout -eq 0 ]; then
+            echo "Timed out waiting for PostgreSQL"
+            exit 1
+          fi
+      - name: Seed test data
+        run: docker exec nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/seed-test-data.sql
       - name: Start dev server and wait for http://localhost:3000
-        run: pnpm run dev & npx wait-port localhost:3000 -t 10000
+        run: pnpm run dev & npx wait-port localhost:3000 -t 20000
       - name: Run Playwright E2E tests
         # uses npx so no package.json changes are required
         run: npx playwright test --reporter=html
