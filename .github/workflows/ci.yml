@@ -6,12 +6,12 @@ on:
   pull_request:
     branches: [main, master]
 
-env:
-  NODE_ENV: development
-  POSTGRES_URL: postgres://nextjs:nextjs@localhost:5432/nextjs
-  POSTGRES_USER: nextjs
-  POSTGRES_HOST: localhost
-  POSTGRES_SSL: false
+# env:
+#   NODE_ENV: development
+#   POSTGRES_URL: postgres://nextjs:nextjs@localhost:5432/nextjs
+#   POSTGRES_USER: nextjs
+#   POSTGRES_HOST: localhost
+#   POSTGRES_SSL: false
 
 jobs:
   build:
@@ -33,7 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       NODE_ENV: development
-      POSTGRES_SSL: false
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js

@@ -13,7 +13,7 @@
     "test:coverage": "jest --coverage",
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
     "test:localdb:up": "docker-compose up -d && sleep 3 && docker exec nextjs_test_db pg_isready -U nextjs -d nextjs && docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/seed-test-data.sql",
-    "test:localdb:down": "docker exec -it nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/teardown/teardown-test-data.sql && docker-compose down -v",
+    "test:localdb:down": "docker exec nextjs_test_db psql -U nextjs -d nextjs -f /docker-entrypoint-initdb.d/teardown/teardown-test-data.sql && docker-compose down -v",
     "test:e2e": "playwright test",
     "test:e2e:html": "playwright test --reporter=html",
     "install:playwright-browsers": "npx playwright install --with-deps",
