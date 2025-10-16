@@ -138,3 +138,12 @@ To stop and remove all data:
 ```bash
 docker-compose down -v
 ```
+
+### Available scripts
+
+local e2e test:
+
+    pnpm run test:localdb:up
+    pnpm run dev
+
+    pnpm run test:e2e
