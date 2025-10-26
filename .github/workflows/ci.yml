@@ -8,10 +8,12 @@ on:
 
 # env:
 #   NODE_ENV: development
+#     NODE_ENV: development in that job means anything you run (including pnpm run dev) sees process.env.NODE_ENV === 'development', so Next.js will load config in this order: .env.development.local → .env.local → .env.development → .env. In CI you usually only have .env.development, so that file supplies the values.
 #   POSTGRES_URL: postgres://nextjs:nextjs@localhost:5432/nextjs
 #   POSTGRES_USER: nextjs
 #   POSTGRES_HOST: localhost
 #   POSTGRES_SSL: false
+
 
 jobs:
   build:
@@ -49,7 +51,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
       - name: Start local PostgreSQL db in docker
-        run: docker-compose up -d
+        run: docker-compose up -d && sleep 3 
+      - name: examine docker log
+        run: docker logs nextjs_test_db
       - name: Wait for PostgreSQL to be ready
         run: |
           echo "Waiting for PostgreSQL to be ready..."
