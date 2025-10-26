@@ -1,15 +1,13 @@
 
-// Mock the setTimeout function to avoid waiting in tests
-jest.useFakeTimers();
-
 describe('fetchRevenue function', () => {
-  let mockSql;
-  let fetchRevenue;
+  let mockSql: jest.Mock;
+  let fetchRevenue: typeof import('@/app/lib/data').fetchRevenue;
   
   beforeEach(() => {
     // Clear all mocks and reset modules before each test
     jest.resetModules();
     jest.clearAllMocks();
+    jest.useFakeTimers();
     
     // Mock console to avoid noise
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -22,12 +20,14 @@ describe('fetchRevenue function', () => {
     });
     
     // Import the function after mocking dependencies
-    fetchRevenue = require('@/app/lib/data').fetchRevenue;
+    fetchRevenue = require('@/app/lib/data').fetchRevenue as typeof import('@/app/lib/data').fetchRevenue;
   });
   
   afterEach(() => {
     // Restore timers
+    jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
    it('should handle empty data', async () => {

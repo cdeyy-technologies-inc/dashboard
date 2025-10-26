@@ -25,7 +25,8 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install -g pnpm && pnpm install
-      - name: Run tests
+      - name: Run Unit / Jest tests
+        # pnpm test uses jest.config.ts automatically, and use .env.test for environment variables
         run: pnpm test
 
   e2e:
