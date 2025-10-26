@@ -13,7 +13,7 @@ import { formatCurrency } from './utils';
 const sql = postgres(process.env.POSTGRES_URL!, {
   ssl: process.env.POSTGRES_SSL === 'false' ? false : 'require'
 });
-//console.log('Database connection established with SSL:', process.env.POSTGRES_SSL);
+console.log('Database connection established with SSL:', process.env.POSTGRES_SSL);
 
 export async function fetchRevenue() {
   try {
