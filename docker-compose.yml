@@ -16,7 +16,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - postgres-data:/var/lib/postgresql/data  # Database storage
+      - postgres-data:/var/lib/postgresql  # Database storage
       - ${PWD}/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d  # INIT SCRIPTS MOUNT
     restart: unless-stopped
 
